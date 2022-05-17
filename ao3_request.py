@@ -31,6 +31,9 @@ def get_content(id):
     para = []
     for t in texts:
         para.append(' '.join(list(t.stripped_strings)))
+        if t.find('img'):
+            source = t.find('img').get('src')
+            st.image(source)
     content = '\n'.join(para)
     content = content.replace('\n', ' \n\n\n ') #.replace('\xa0', ' \n\n\n ').replace('\u3000', ' \n\n\n ')
     st.write(re.sub("~+", " \* ", str(content)))
