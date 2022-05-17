@@ -21,7 +21,12 @@ def get_content(id):
     title = bs.find('h2', {'class':'title heading'})
     author = bs.find('a',{'rel':'author'})
     st.markdown(f"<h2 style='text-align: center;'>{title.text}</h2>", unsafe_allow_html=True)
-    st.markdown(f"<h3 style='text-align: center;'>{author.text}</h3>", unsafe_allow_html=True)
+    st.markdown(f"<h4 style='text-align: center;'>by {author.text}</h4>", unsafe_allow_html=True)
+    try:
+        chapter_headline = bs.find('h3',{'class':'title'}).text.strip()
+        st.markdown(f"<h3 style='text-align: center;'>{chapter_headline}</h3>", unsafe_allow_html=True)
+    except:
+        pass
     texts = chapters.find_all('p')
     para = []
     for t in texts:
