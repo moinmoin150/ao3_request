@@ -59,7 +59,7 @@ if len(work_id) > 1:
         if len(links) == 1:
             get_content(f'/works/{work_id}')
         else:
-            option = st.selectbox('How would you like to be contacted?', options)
+            option = st.selectbox('选择章节', options)
             get_content(links[options.index(option)])
     except:
         st.write("请输入一个有效的ID！")
