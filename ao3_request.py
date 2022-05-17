@@ -17,6 +17,8 @@ def get_content(id):
     req = urllib.request.Request(url)
     resp = urllib.request.urlopen(req)
     bs = BeautifulSoup(resp, 'lxml')
+    for br in bs.find_all("br"):
+        br.replace_with("nnnnn")
     chapters = bs.find('div', {'class':'userstuff'})
     title = bs.find('h2', {'class':'title heading'})
     author = bs.find('a',{'rel':'author'})
@@ -30,12 +32,12 @@ def get_content(id):
     texts = chapters.find_all('p')
     para = []
     for t in texts:
-        para.append(' '.join(list(t.stripped_strings)))
+        para.append(' '.join(['\n' if (i == 'nnnnn') else i for i in list(t.stripped_strings) ]))
         if t.find('img'):
             source = t.find('img').get('src')
             st.image(source)
     content = '\n'.join(para)
-    content = content.replace('\n', ' \n\n\n ').replace('<br/>', ' \n\n\n ') #.replace('\xa0', ' \n\n\n ') #.replace('\u3000', ' \n\n\n ')
+    content = content.replace('\n', ' \n\n\n ') #.replace('\xa0', ' \n\n\n ') #.replace('\u3000', ' \n\n\n ')
     st.write(re.sub("~+", " \* ", str(content)))
 
 def text_field(label, columns=None, **input_params):
