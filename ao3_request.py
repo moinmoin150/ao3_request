@@ -17,9 +17,11 @@ def get_content(id):
     req = urllib.request.Request(url)
     resp = urllib.request.urlopen(req)
     bs = BeautifulSoup(resp, 'lxml')
-    chapters = bs.find('div', {'id':'chapters'})
+    chapters = bs.find('div', {'class':'userstuff'})
     title = bs.find('h2', {'class':'title heading'})
+    author = bs.find('h3').find('a').text
     st.markdown(f"<h2 style='text-align: center;'>{title.text}</h2>", unsafe_allow_html=True)
+    st.markdown(f"<h3 style='text-align: center;'>{author}</h3>", unsafe_allow_html=True)
     texts = chapters.find_all('p')
     para = []
     for t in texts:
