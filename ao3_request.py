@@ -18,6 +18,8 @@ def get_content(id):
     resp = urllib.request.urlopen(req)
     bs = BeautifulSoup(resp, 'lxml')
     chapters = bs.find('div', {'id':'chapters'})
+    title = bs.find('h2', {'class':'title heading'})
+    st.mardown(f"### {title.text}")
     texts = chapters.find_all('p')
     para = []
     for t in texts:
