@@ -1,0 +1,3 @@
+streamlit
+lxml==4.5.2
+bs4==0.0.1
