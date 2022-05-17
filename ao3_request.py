@@ -27,7 +27,7 @@ def get_content(id):
     st.write(re.sub("~+", " \* ", str(content)))
 
 def text_field(label, columns=None, **input_params):
-    c1, c2, _ = st.columns([2, 1, 3])
+    c1, c2, _ = st.columns([2, 1, 4])
     c1.markdown("##")
     c1.markdown(label)
     input_params.setdefault("key", label)
@@ -36,7 +36,7 @@ def text_field(label, columns=None, **input_params):
 
 
 st.markdown("# 给我一篇FanFic！")
-st.text("给我一个数字ID")
+st.markdown("### 给我一个数字ID")
 work_id = text_field("archiveofourown.org/works/")
 if len(work_id) > 1:
     links = navigate_chapters(work_id)
