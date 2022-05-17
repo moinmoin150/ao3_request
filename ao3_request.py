@@ -23,7 +23,7 @@ def get_content(id):
     for t in texts:
         para.append('\n'.join(list(t.stripped_strings)))
     content = '\n'.join(para)
-#     content = content.replace('\n', ' \n\n\n ').replace('\xa0', ' \n\n\n ').replace('\u3000', ' \n\n\n ')
+    content = content.replace('\n', ' \n\n\n ') #.replace('\xa0', ' \n\n\n ').replace('\u3000', ' \n\n\n ')
     st.write(re.sub("~+", " \* ", str(content)))
 
 def text_field(label, columns=None, **input_params):
