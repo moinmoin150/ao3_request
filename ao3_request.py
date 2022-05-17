@@ -53,10 +53,14 @@ st.markdown("# 给我一篇FanFic！")
 st.markdown("### 给我一个数字ID:")
 work_id = text_field("archiveofourown.org/works/")
 if len(work_id) > 1:
-    links = navigate_chapters(work_id)
-    options = [f'Chapter {i+1}' for i in range(len(links))]
-    if len(links) == 1:
-        get_content(f'/works/{work_id}')
-    else:
-        option = st.selectbox('How would you like to be contacted?', options)
-        get_content(links[options.index(option)])
+    try:
+        links = navigate_chapters(work_id)
+        options = [f'Chapter {i+1}' for i in range(len(links))]
+        if len(links) == 1:
+            get_content(f'/works/{work_id}')
+        else:
+            option = st.selectbox('How would you like to be contacted?', options)
+            get_content(links[options.index(option)])
+    except:
+        st.write("请输入一个有效的ID！")
+        
