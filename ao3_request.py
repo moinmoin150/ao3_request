@@ -27,7 +27,7 @@ def get_content(id):
     st.write(re.sub("~+", " \* ", str(content)))
 
 def text_field(label, columns=None, **input_params):
-    c1, c2 = st.beta_columns(columns or [1, 4])
+    c1, c2 = st.columns(columns or [1, 4])
     c1.markdown("##")
     c1.markdown(label)
     input_params.setdefault("key", label)
