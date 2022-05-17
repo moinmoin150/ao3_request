@@ -27,7 +27,7 @@ def get_content(id):
     st.write(re.sub("~+", " \* ", str(content)))
 
 def text_field(label, columns=None, **input_params):
-    c1, c2 = st.columns(columns or [1, 4])
+    c1, c2 = st.columns(columns or [4, 1])
     c1.markdown("##")
     c1.markdown(label)
     input_params.setdefault("key", label)
@@ -38,10 +38,11 @@ def text_field(label, columns=None, **input_params):
 st.markdown("# 给我一篇FanFic！")
 st.text("给我一个数字ID")
 work_id = text_field("archiveofourown.org/works/")
-links = navigate_chapters(work_id)
-options = [f'Chapter {i+1}' for i in range(len(links))]
-if len(links) == 1:
-    get_content(f'/works/{work_id}')
-else:
-    option = st.selectbox('How would you like to be contacted?', options)
-    get_content(links[options.index(option)])
+if len(work_id) > 1:
+    links = navigate_chapters(work_id)
+    options = [f'Chapter {i+1}' for i in range(len(links))]
+    if len(links) == 1:
+        get_content(f'/works/{work_id}')
+    else:
+        option = st.selectbox('How would you like to be contacted?', options)
+        get_content(links[options.index(option)])
