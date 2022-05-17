@@ -19,7 +19,7 @@ def get_content(id):
     bs = BeautifulSoup(resp, 'lxml')
     chapters = bs.find('div', {'id':'chapters'})
     title = bs.find('h2', {'class':'title heading'})
-    st.header(title.text)
+    st.markdown(f"<h2 style='text-align: center;'>{title.text}</h2>")
     texts = chapters.find_all('p')
     para = []
     for t in texts:
