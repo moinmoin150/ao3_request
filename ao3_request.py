@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup, NavigableString
 import urllib.request
 from st_aggrid import GridOptionsBuilder, AgGrid, GridUpdateMode, DataReturnMode
 import pandas as pd
-
+st.set_page_config(layout="wide")
 data= pd.read_csv('GGAD_test.csv', index_col=0) 
 
 gb = GridOptionsBuilder.from_dataframe(data)
