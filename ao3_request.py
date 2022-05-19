@@ -3,6 +3,7 @@ import re
 from bs4 import BeautifulSoup, NavigableString
 import urllib.request
 from st_aggrid import GridOptionsBuilder, AgGrid, GridUpdateMode, DataReturnMode
+import pandas as pd
 
 data= pd.read_csv('GGAD_test.csv', index_col=0) 
 
