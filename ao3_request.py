@@ -209,7 +209,7 @@ if len(work_id) > 1:
         st.write("请输入一个有效的ID！")
         
 st.markdown('### 上次更新数据:')
-with open('update_date.txt', 'r') as file:
+with open('updated_date.txt', 'r') as file:
     content = file.read()
 st.write(f"（更新于 {content}）")
 data= pd.read_csv('GGAD_test.csv', index_col=0) 
@@ -217,7 +217,7 @@ data= pd.read_csv('GGAD_test.csv', index_col=0)
 st.write("*注意：实时更新会耗费大约3分钟时间*")
 if st.button('实时更新'):
     update_date = time.strftime("%Y-%m-%d", time.localtime())
-    with open('update_date.txt', 'w') as file:
+    with open('updated_date.txt', 'w') as file:
         file.write(update_date)
     update_file(content)
     with st.spinner("Processing..."):
