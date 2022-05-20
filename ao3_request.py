@@ -112,7 +112,7 @@ def display(data):
     selected = grid_response['selected_rows'] 
     df = pd.DataFrame(selected)
 
-def update_file():
+def update_file(content):
     all_files = []
     contents = repo.get_contents("")
     while contents:
@@ -122,6 +122,14 @@ def update_file():
         else:
             file = file_content
             all_files.append(str(file).replace('ContentFile(path="','').replace('")',''))
+    git_prefix = ''
+    git_file = git_prefix + 'GGAD_test2.csv'
+    if git_file in all_files:
+        contents = repo.get_contents(git_file)
+        repo.update_file(contents.path, "committing files", content, contents.sha, branch="main")
+    else:
+        repo.create_file(git_file, "committing files", content, branch="main")
+    
     
 st.markdown('### 默认数据（更新于2022年五月）')
 data= pd.read_csv('GGAD_test.csv', index_col=0) 
@@ -133,8 +141,19 @@ if st.button('实时更新'):
         data = scrape()
     st.success("更新完成！")
     display(data)
-    
-    
+    data.to_csv('GGAD_test2.csv')
+    with open('GGAD_test2.csv', 'r') as file:
+        content = file.read()
+    update_file(content)
+ 
+data.columns = ['标题', '作者', 'ID', '更新日期', '评级', '标签',\
+                                  '完成与否', '语言', '字数', '章节数',\
+                                   '评论数', 'Kudo数', '书签数', '点击数']
+data.to_csv('GGAD_test2.csv')
+with open('GGAD_test2.csv', 'r') as file:
+    content = file.read()
+update_file(content)
+
 def navigate_chapters(work_id):
     url = 'https://archiveofourown.org/works/' + str(work_id) + '/navigate?view_adult=true'
     req = urllib.request.Request(url)
