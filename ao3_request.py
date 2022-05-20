@@ -113,9 +113,9 @@ def display(data):
     selected = grid_response['selected_rows'] 
     df = pd.DataFrame(selected)
     if len(df) == 1:
-        st.write(df['ID'])
+        selected_id = df.loc[0,'ID']
     if len(df) > 1:
-        st.write("如需搜索选中ID，请勿多选")
+        st.markdown('<p style="color:Red;">如需搜索选中ID，请勿多选</p>', unsafe_allow_html=True)
 
 def update_file(content):
     g = Github(st.secrets["github"])
@@ -201,8 +201,10 @@ def text_field(label, columns=None, **input_params):
 
 st.markdown("# 给我一篇FanFic！")
 st.markdown("### 给我一个数字ID:")
-work_id = text_field("archiveofourown.org/works/")
-if len(work_id) > 1:
+if not selected_id:
+    selected_id == 0
+work_id = text_field("archiveofourown.org/works/",selected_id)
+if work_id > 0:
     try:
         links = navigate_chapters(work_id)
         options = [f'Chapter {i+1}' for i in range(len(links))]
