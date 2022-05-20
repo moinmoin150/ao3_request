@@ -4,8 +4,94 @@ from bs4 import BeautifulSoup, NavigableString
 import urllib.request
 from st_aggrid import GridOptionsBuilder, AgGrid, GridUpdateMode, DataReturnMode
 import pandas as pd
+import urllib.request
+
+
 st.set_page_config(layout="wide")
+headers = {'user-agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_2) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Safari/605.1.15'}
+
+def scrape():
+    url = 'https://archiveofourown.org/tags/Albus%20Dumbledore*s*Gellert%20Grindelwald/works?commit=Sort+and+Filter&page=1&work_search%5Blanguage_id%5D=zh'
+    req = urllib.request.Request(url,headers=headers)
+    resp = urllib.request.urlopen(req)
+    bs = BeautifulSoup(resp, 'lxml')
+    pages = bs.find('ol', {'class':'pagination actions'}).find_all('li')
+    final_pg = int(pages[-2].text)
+    titles = []
+    authors = []
+    ids = []
+    date_updated = []
+    ratings = []
+    tags = []
+    complete = []
+    languages = []
+    word_count = []
+    chapters = []
+    summaries = []
+    comments = []
+    kudos = []
+    bookmarks = []
+    hits = []
+    for i in range(1,final_pg+1):
+        url = f'https://archiveofourown.org/tags/Albus%20Dumbledore*s*Gellert%20Grindelwald/works?commit=Sort+and+Filter&page={i}&work_search%5Blanguage_id%5D=zh'
+        req = urllib.request.Request(url,headers=headers)
+        resp = urllib.request.urlopen(req)
+        bs = BeautifulSoup(resp, 'lxml')
+
+        for article in bs.find_all('li', {'role':'article'}):
+            titles.append(article.find('h4', {'class':'heading'}).find('a').text)
+            try:
+                authors.append(article.find('a', {'rel':'author'}).text)
+            except:
+                authors.append('Anonymous')
+            ids.append(article.find('h4', {'class':'heading'}).find('a').get('href')[7:])
+            date_updated.append(article.find('p', {'class':'datetime'}).text)
+            ratings.append(article.find('span', {'class':re.compile(r'rating\-.*rating')}).text)
+            tags.append('; '.join([i.text for i in article.find('ul',{'class':'tags commas'}).find_all('a', {'class':'tag'})]))
+            complete.append(article.find('span', {'class':re.compile(r'complete\-.*iswip')}).text)
+            languages.append(article.find('dd', {'class':'language'}).text)
+            try:
+                summaries.append(article.find('blockquote', {'class':'userstuff summary'}).text.strip())
+            except:
+                summaries.append('No Summary')
+            count = article.find('dd', {'class':'words'}).text
+            if len(count) > 0:
+                word_count.append(int(count.replace(',','')))
+            else:
+                word_count.append(0)
+            chapters.append(int(article.find('dd', {'class':'chapters'}).text.split('/')[0].replace(',','')))
+            try:
+                comments.append(int(article.find('dd', {'class':'comments'}).text.replace(',','')))
+            except:
+                comments.append(0)
+            try:
+                kudos.append(int(article.find('dd', {'class':'kudos'}).text.replace(',','')))
+            except:
+                kudos.append(0)
+            try:
+                bookmarks.append(int(article.find('dd', {'class':'bookmarks'}).text.replace(',','')))
+            except:
+                bookmarks.append(0)
+            try:
+                hits.append(int(article.find('dd', {'class':'hits'}).text.replace(',','')))
+            except:
+                hits.append(0)
+                
+    df = pd.DataFrame(list(zip(titles, authors, ids, ratings, tags, summaries, date_updated, \
+                              complete, languages, word_count, chapters,\
+                               comments, kudos, bookmarks, hits)))
+    df.columns = ['Title', 'Author', 'ID', 'Date Updated', 'Rating', 'Tags',\
+                                  'Completion Status', 'Language', 'Word Count', 'Number of Chapters',\
+                                   'Comments', 'Kudos', 'Bookmarks', 'Hits']
+    df['Kudo to Hit Ratio'] = df['Kudos']/df['Hits']
+    df['Kudo to Hit Ratio'] = df['Kudo to Hit Ratio'].apply(lambda x: round(x,3))
+    df['Date Updated'] = pd.to_datetime(df['Date Updated'])
+    return df
+
+st.write('默认数据（更新于2022年五月）')
 data= pd.read_csv('GGAD_test.csv', index_col=0) 
+if st.button('实时更新'):
+    data = scrape()
 
 gb = GridOptionsBuilder.from_dataframe(data)
 gb.configure_pagination(paginationAutoPageSize=True) #Add pagination
