@@ -6,18 +6,13 @@ from st_aggrid import GridOptionsBuilder, AgGrid, GridUpdateMode, DataReturnMode
 import pandas as pd
 import urllib.request
 from github import Github
+import time
 
 
 st.set_page_config(layout="wide")
 headers = {'user-agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_2) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Safari/605.1.15'}
 
 def scrape():
-    url = 'https://archiveofourown.org/tags/Albus%20Dumbledore*s*Gellert%20Grindelwald/works?commit=Sort+and+Filter&page=1&work_search%5Blanguage_id%5D=zh'
-    req = urllib.request.Request(url,headers=headers)
-    resp = urllib.request.urlopen(req)
-    bs = BeautifulSoup(resp, 'lxml')
-    pages = bs.find('ol', {'class':'pagination actions'}).find_all('li')
-    final_pg = int(pages[-2].text)
     titles = []
     authors = []
     ids = []
@@ -33,57 +28,64 @@ def scrape():
     kudos = []
     bookmarks = []
     hits = []
-    for i in range(1,final_pg+1):
-        url = f'https://archiveofourown.org/tags/Albus%20Dumbledore*s*Gellert%20Grindelwald/works?commit=Sort+and+Filter&page={i}&work_search%5Blanguage_id%5D=zh'
+    for lang in ["zh","en"]:
+        url = f'https://archiveofourown.org/tags/Albus%20Dumbledore*s*Gellert%20Grindelwald/works?commit=Sort+and+Filter&page=1&work_search%5Blanguage_id%5D={lang}'
         req = urllib.request.Request(url,headers=headers)
         resp = urllib.request.urlopen(req)
         bs = BeautifulSoup(resp, 'lxml')
+        pages = bs.find('ol', {'class':'pagination actions'}).find_all('li')
+        final_pg = int(pages[-2].text)
+        for i in range(1,final_pg+1):
+            url = f'https://archiveofourown.org/tags/Albus%20Dumbledore*s*Gellert%20Grindelwald/works?commit=Sort+and+Filter&page={i}&work_search%5Blanguage_id%5D={lang}'
+            req = urllib.request.Request(url,headers=headers)
+            resp = urllib.request.urlopen(req)
+            bs = BeautifulSoup(resp, 'lxml')
 
-        for article in bs.find_all('li', {'role':'article'}):
-            titles.append(article.find('h4', {'class':'heading'}).find('a').text)
-            try:
-                authors.append(article.find('a', {'rel':'author'}).text)
-            except:
-                authors.append('Anonymous')
-            ids.append(article.find('h4', {'class':'heading'}).find('a').get('href')[7:])
-            date_updated.append(article.find('p', {'class':'datetime'}).text)
-            ratings.append(article.find('span', {'class':re.compile(r'rating\-.*rating')}).text)
-            tags.append('; '.join([i.text for i in article.find('ul',{'class':'tags commas'}).find_all('a', {'class':'tag'})]))
-            complete.append(article.find('span', {'class':re.compile(r'complete\-.*iswip')}).text)
-            languages.append(article.find('dd', {'class':'language'}).text)
-            try:
-                summaries.append(article.find('blockquote', {'class':'userstuff summary'}).text.strip())
-            except:
-                summaries.append('No Summary')
-            count = article.find('dd', {'class':'words'}).text
-            if len(count) > 0:
-                word_count.append(int(count.replace(',','')))
-            else:
-                word_count.append(0)
-            chapters.append(int(article.find('dd', {'class':'chapters'}).text.split('/')[0].replace(',','')))
-            try:
-                comments.append(int(article.find('dd', {'class':'comments'}).text.replace(',','')))
-            except:
-                comments.append(0)
-            try:
-                kudos.append(int(article.find('dd', {'class':'kudos'}).text.replace(',','')))
-            except:
-                kudos.append(0)
-            try:
-                bookmarks.append(int(article.find('dd', {'class':'bookmarks'}).text.replace(',','')))
-            except:
-                bookmarks.append(0)
-            try:
-                hits.append(int(article.find('dd', {'class':'hits'}).text.replace(',','')))
-            except:
-                hits.append(0)
+            for article in bs.find_all('li', {'role':'article'}):
+                titles.append(article.find('h4', {'class':'heading'}).find('a').text)
+                try:
+                    authors.append(article.find('a', {'rel':'author'}).text)
+                except:
+                    authors.append('Anonymous')
+                ids.append(article.find('h4', {'class':'heading'}).find('a').get('href')[7:])
+                date_updated.append(article.find('p', {'class':'datetime'}).text)
+                ratings.append(article.find('span', {'class':re.compile(r'rating\-.*rating')}).text)
+                tags.append('; '.join([i.text for i in article.find('ul',{'class':'tags commas'}).find_all('a', {'class':'tag'})]))
+                complete.append(article.find('span', {'class':re.compile(r'complete\-.*iswip')}).text)
+                languages.append(article.find('dd', {'class':'language'}).text)
+                try:
+                    summaries.append(article.find('blockquote', {'class':'userstuff summary'}).text.strip())
+                except:
+                    summaries.append('No Summary')
+                count = article.find('dd', {'class':'words'}).text
+                if len(count) > 0:
+                    word_count.append(int(count.replace(',','')))
+                else:
+                    word_count.append(0)
+                chapters.append(int(article.find('dd', {'class':'chapters'}).text.split('/')[0].replace(',','')))
+                try:
+                    comments.append(int(article.find('dd', {'class':'comments'}).text.replace(',','')))
+                except:
+                    comments.append(0)
+                try:
+                    kudos.append(int(article.find('dd', {'class':'kudos'}).text.replace(',','')))
+                except:
+                    kudos.append(0)
+                try:
+                    bookmarks.append(int(article.find('dd', {'class':'bookmarks'}).text.replace(',','')))
+                except:
+                    bookmarks.append(0)
+                try:
+                    hits.append(int(article.find('dd', {'class':'hits'}).text.replace(',','')))
+                except:
+                    hits.append(0)
                 
-    df = pd.DataFrame(list(zip(titles, authors, ids, date_updated, ratings, tags, summaries, \
+    df = pd.DataFrame(list(zip(titles, authors, ids, date_updated, ratings, \
                               complete, languages, word_count, chapters,\
-                               comments, kudos, bookmarks, hits)))
-    df.columns = ['标题', '作者', 'ID', '更新日期', '评级', '标签', '简介',\
+                               comments, kudos, bookmarks, hits, tags, summaries)))
+    df.columns = ['标题', '作者', 'ID', '更新日期', '评级', \
                                   '完成与否', '语言', '字数', '章节数',\
-                                   '评论数', 'Kudo数', '书签数', '点击数']
+                                   '评论数', 'Kudo数', '书签数', '点击数', '标签', '简介']
     df['Kudo点击比'] = df['Kudo数']/df['点击数']
     df = df.fillna(0)
     df['Kudo点击比'] = df['Kudo点击比'].apply(lambda x: round(x,3))
@@ -93,7 +95,7 @@ def scrape():
 def display(data):
     gb = GridOptionsBuilder.from_dataframe(data)
     gb.configure_pagination(paginationAutoPageSize=True) #Add pagination
-    gb.configure_auto_height(autoHeight = False)
+#     gb.configure_auto_height(autoHeight = False)
     gb.configure_default_column(min_column_width=10,other_default_column_properties={"wrapText":True, "autoHeight":True})
     gb.configure_side_bar() #Add a sidebar
 #     gb.configure_selection('multiple', use_checkbox=True, groupSelectsChildren="Group checkbox select children") #Enable multi-row selection
@@ -140,22 +142,6 @@ def update_file(content):
     else:
         repo.create_file(git_file, "committing files", content, branch="main")
     
-    
-st.markdown('### 默认数据（更新于2022年五月）')
-data= pd.read_csv('GGAD_test.csv', index_col=0) 
-
-st.write("*注意：实时更新会耗费大约1分钟时间*")
-if st.button('实时更新'):
-    with st.spinner("Processing..."):
-        data = scrape()
-    st.success("更新完成！")
-    display(data)
-    data.to_csv('GGAD_test.csv')
-    with open('GGAD_test.csv', 'r') as file:
-        content = file.read()
-    update_file(content)
-else:
-    display(data)
 
 def navigate_chapters(work_id):
     url = 'https://archiveofourown.org/works/' + str(work_id) + '/navigate?view_adult=true'
@@ -222,3 +208,26 @@ if len(work_id) > 1:
     except:
         st.write("请输入一个有效的ID！")
         
+st.markdown('### 上次更新数据:')
+with open('update_date.txt', 'r') as file:
+    content = file.read()
+st.write(f"（更新于 {content}）")
+data= pd.read_csv('GGAD_test.csv', index_col=0) 
+
+st.write("*注意：实时更新会耗费大约3分钟时间*")
+if st.button('实时更新'):
+    update_date = time.strftime("%Y-%m-%d", time.localtime())
+    with open('update_date.txt', 'w') as file:
+        file.write(update_date)
+    update_file(content)
+    with st.spinner("Processing..."):
+        data = scrape()
+    st.success("更新完成！")
+    display(data)
+    data.to_csv('GGAD_test.csv')
+    with open('GGAD_test.csv', 'r') as file:
+        content = file.read()
+    update_file(content)
+else:
+    display(data)
+    
