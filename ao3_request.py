@@ -201,10 +201,12 @@ def text_field(label, columns=None, **input_params):
 
 st.markdown("# 给我一篇FanFic！")
 st.markdown("### 给我一个数字ID:")
-if not selected_id:
-    selected_id == 0
-work_id = text_field("archiveofourown.org/works/",selected_id)
-if work_id > 0:
+try: 
+    selected_id
+    work_id = text_field("archiveofourown.org/works/",selected_id)
+except:
+    work_id = text_field("archiveofourown.org/works/")
+if len(work_id) > 1:
     try:
         links = navigate_chapters(work_id)
         options = [f'Chapter {i+1}' for i in range(len(links))]
