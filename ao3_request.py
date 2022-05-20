@@ -81,7 +81,7 @@ def scrape():
     df = pd.DataFrame(list(zip(titles, authors, ids, date_updated, ratings, tags, summaries, \
                               complete, languages, word_count, chapters,\
                                comments, kudos, bookmarks, hits)))
-    df.columns = ['标题', '作者', 'ID', '更新日期', '评级', '标签', '简介'\
+    df.columns = ['标题', '作者', 'ID', '更新日期', '评级', '标签', '简介',\
                                   '完成与否', '语言', '字数', '章节数',\
                                    '评论数', 'Kudo数', '书签数', '点击数']
     df['Kudo点击比'] = df['Kudo数']/df['点击数']
