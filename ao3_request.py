@@ -93,7 +93,7 @@ def display(data):
     gb = GridOptionsBuilder.from_dataframe(data)
     gb.configure_pagination(paginationAutoPageSize=True) #Add pagination
     gb.configure_side_bar() #Add a sidebar
-    gb.configure_selection('multiple', use_checkbox=True, groupSelectsChildren="Group checkbox select children") #Enable multi-row selection
+#     gb.configure_selection('multiple', use_checkbox=True, groupSelectsChildren="Group checkbox select children") #Enable multi-row selection
     gridOptions = gb.build()
 
     grid_response = AgGrid(
@@ -114,8 +114,8 @@ def display(data):
     df = pd.DataFrame(selected)
     if len(df) == 1:
         selected_id = df.loc[0,'ID']
-    if len(df) > 1:
-        st.markdown('<p style="color:Red;">如需搜索选中ID，请勿多选</p>', unsafe_allow_html=True)
+#     if len(df) > 1:
+#         st.markdown('<p style="color:Red;">如需搜索选中ID，请勿多选</p>', unsafe_allow_html=True)
 
 def update_file(content):
     g = Github(st.secrets["github"])
