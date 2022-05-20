@@ -85,11 +85,12 @@ def scrape():
                                comments, kudos, bookmarks, hits, tags, summaries)))
     df.columns = ['标题', '作者', 'ID', '更新日期', '评级', \
                                   '完成与否', '语言', '字数', '章节数',\
-                                   '评论数', 'Kudo数', '书签数', '点击数', '标签', '简介']
+                                   '评论数', 'Kudo数', '收藏数', '点击数', '标签', '简介']
     df['Kudo点击比'] = df['Kudo数']/df['点击数']
     df = df.fillna(0)
     df['Kudo点击比'] = df['Kudo点击比'].apply(lambda x: round(x,3))
     df['更新日期'] = pd.to_datetime(df['更新日期'])
+    df['更新日期'] = df['更新日期'].apply(lambda x: x.strftime('%m-%d-%Y'))
     return df
 
 def display(data):
@@ -214,7 +215,7 @@ with open('updated_date.txt', 'r') as file:
 st.write(f"（更新于 {content}）")
 data= pd.read_csv('GGAD_test.csv', index_col=0) 
 
-st.write("*注意：实时更新会耗费大约3分钟时间*")
+st.write("*注意：实时更新会耗费大约1分钟时间*")
 if st.button('实时更新'):
     update_date = time.strftime("%Y-%m-%d", time.localtime())
     with open('updated_date.txt', 'w') as file:
