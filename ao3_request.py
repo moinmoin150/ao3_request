@@ -93,6 +93,7 @@ def scrape():
 def display(data):
     gb = GridOptionsBuilder.from_dataframe(data)
     gb.configure_pagination(paginationAutoPageSize=True) #Add pagination
+    gb.configure_default_column({wrapText:True, autoHeight:True})
     gb.configure_side_bar() #Add a sidebar
 #     gb.configure_selection('multiple', use_checkbox=True, groupSelectsChildren="Group checkbox select children") #Enable multi-row selection
     gridOptions = gb.build()
@@ -102,15 +103,12 @@ def display(data):
         gridOptions=gridOptions,
         data_return_mode='AS_INPUT', 
         update_mode='MODEL_CHANGED', 
-        fit_columns_on_grid_load=True,
+        fit_columns_on_grid_load=False,
         theme='blue', #Add theme color to the table
         enable_enterprise_modules=True,
-        height=800,
-        rowHeight=1000,
+        height=700,
         width='100%',
-        reload_data=True,
-        resizable = True,
-        wrapText = True
+        reload_data=True
     )
 
     data = grid_response['data']
