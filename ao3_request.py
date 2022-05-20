@@ -93,7 +93,7 @@ def scrape():
 def display(data):
     gb = GridOptionsBuilder.from_dataframe(data)
     gb.configure_pagination(paginationAutoPageSize=True) #Add pagination
-    gb.configure_default_column(other_default_column_properties:{"wrapText":True, "autoHeight":True})
+    gb.configure_default_column(other_default_column_properties={"wrapText":True, "autoHeight":True})
     gb.configure_side_bar() #Add a sidebar
 #     gb.configure_selection('multiple', use_checkbox=True, groupSelectsChildren="Group checkbox select children") #Enable multi-row selection
     gridOptions = gb.build()
