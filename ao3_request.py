@@ -77,10 +77,10 @@ def scrape():
             except:
                 hits.append(0)
                 
-    df = pd.DataFrame(list(zip(titles, authors, ids, ratings, tags, summaries, date_updated, \
+    df = pd.DataFrame(list(zip(titles, authors, ids, date_updated, ratings, tags, summaries, \
                               complete, languages, word_count, chapters,\
                                comments, kudos, bookmarks, hits)))
-    df.columns = ['标题', '作者', 'ID', '更新日期', '评级', '标签',\
+    df.columns = ['标题', '作者', 'ID', '更新日期', '评级', '标签', '简介'\
                                   '完成与否', '语言', '字数', '章节数',\
                                    '评论数', 'Kudo数', '书签数', '点击数']
     df['Kudo点击比'] = df['Kudo数']/df['点击数']
@@ -148,7 +148,7 @@ if st.button('实时更新'):
  
 data.columns = ['标题', '作者', 'ID', '更新日期', '评级', '标签',\
                                   '完成与否', '语言', '字数', '章节数',\
-                                   '评论数', 'Kudo数', '书签数', '点击数']
+                                   '评论数', 'Kudo数', '书签数', '点击数', 'Kudo点击比']
 data.to_csv('GGAD_test2.csv')
 with open('GGAD_test2.csv', 'r') as file:
     content = file.read()
