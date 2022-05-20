@@ -107,7 +107,9 @@ def display(data):
         enable_enterprise_modules=True,
         autoHeight=True,
         width='100%',
-        reload_data=True
+        reload_data=True,
+        resizable = True,
+        wrapText = True
     )
 
     data = grid_response['data']
