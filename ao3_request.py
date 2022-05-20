@@ -113,6 +113,8 @@ def display(data):
     df = pd.DataFrame(selected)
 
 def update_file(content):
+    g = Github("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")
+    repo = g.get_user().get_repo("ao3_request")
     all_files = []
     contents = repo.get_contents("")
     while contents:
