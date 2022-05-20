@@ -80,42 +80,50 @@ def scrape():
     df = pd.DataFrame(list(zip(titles, authors, ids, ratings, tags, summaries, date_updated, \
                               complete, languages, word_count, chapters,\
                                comments, kudos, bookmarks, hits)))
-    df.columns = ['Title', 'Author', 'ID', 'Date Updated', 'Rating', 'Tags',\
-                                  'Completion Status', 'Language', 'Word Count', 'Number of Chapters',\
-                                   'Comments', 'Kudos', 'Bookmarks', 'Hits']
-    df['Kudo to Hit Ratio'] = df['Kudos']/df['Hits']
-    df['Kudo to Hit Ratio'] = df['Kudo to Hit Ratio'].apply(lambda x: round(x,3))
-    df['Date Updated'] = pd.to_datetime(df['Date Updated'])
+    df.columns = ['标题', '作者', 'ID', '更新日期', '评级', '标签',\
+                                  '完成与否', '语言', '字数', '章节数',\
+                                   '评论数', 'Kudo数', '书签数', '点击数']
+    df['Kudo点击比'] = df['Kudo数']/df['点击数']
+    df['Kudo点击比'] = df['Kudo点击比'].apply(lambda x: round(x,3))
+    df['更新日期'] = pd.to_datetime(df['更新日期'])
     return df
 
-st.write('默认数据（更新于2022年五月）')
+def display(data):
+    gb = GridOptionsBuilder.from_dataframe(data)
+    gb.configure_pagination(paginationAutoPageSize=True) #Add pagination
+    gb.configure_side_bar() #Add a sidebar
+    gb.configure_selection('multiple', use_checkbox=True, groupSelectsChildren="Group checkbox select children") #Enable multi-row selection
+    gridOptions = gb.build()
+
+    grid_response = AgGrid(
+        data,
+        gridOptions=gridOptions,
+        data_return_mode='AS_INPUT', 
+        update_mode='MODEL_CHANGED', 
+        fit_columns_on_grid_load=False,
+        theme='blue', #Add theme color to the table
+        enable_enterprise_modules=True,
+        height=350, 
+        width='100%',
+        reload_data=True
+    )
+
+    data = grid_response['data']
+    selected = grid_response['selected_rows'] 
+    df = pd.DataFrame(selected)
+    
+st.markdown('### 默认数据（更新于2022年五月）')
 data= pd.read_csv('GGAD_test.csv', index_col=0) 
+display(data)
+
+st.write("*注意：实时更新会耗费大约1分钟时间*")
 if st.button('实时更新'):
-    data = scrape()
-
-gb = GridOptionsBuilder.from_dataframe(data)
-gb.configure_pagination(paginationAutoPageSize=True) #Add pagination
-gb.configure_side_bar() #Add a sidebar
-gb.configure_selection('multiple', use_checkbox=True, groupSelectsChildren="Group checkbox select children") #Enable multi-row selection
-gridOptions = gb.build()
-
-grid_response = AgGrid(
-    data,
-    gridOptions=gridOptions,
-    data_return_mode='AS_INPUT', 
-    update_mode='MODEL_CHANGED', 
-    fit_columns_on_grid_load=False,
-    theme='blue', #Add theme color to the table
-    enable_enterprise_modules=True,
-    height=350, 
-    width='100%',
-    reload_data=True
-)
-
-data = grid_response['data']
-selected = grid_response['selected_rows'] 
-df = pd.DataFrame(selected)
-
+    with st.spinner("Processing..."):
+        data = scrape()
+    st.success("更新完成！")
+    display(data)
+    
+    
 def navigate_chapters(work_id):
     url = 'https://archiveofourown.org/works/' + str(work_id) + '/navigate?view_adult=true'
     req = urllib.request.Request(url)
