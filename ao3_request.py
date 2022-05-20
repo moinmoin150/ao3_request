@@ -28,7 +28,7 @@ def scrape():
     kudos = []
     bookmarks = []
     hits = []
-    for lang in ["zh","en"]:
+    for lang in ["zh"]:
         url = f'https://archiveofourown.org/tags/Albus%20Dumbledore*s*Gellert%20Grindelwald/works?commit=Sort+and+Filter&page=1&work_search%5Blanguage_id%5D={lang}'
         req = urllib.request.Request(url,headers=headers)
         resp = urllib.request.urlopen(req)
