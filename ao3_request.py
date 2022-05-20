@@ -111,6 +111,17 @@ def display(data):
     data = grid_response['data']
     selected = grid_response['selected_rows'] 
     df = pd.DataFrame(selected)
+
+def update_file():
+    all_files = []
+    contents = repo.get_contents("")
+    while contents:
+        file_content = contents.pop(0)
+        if file_content.type == "dir":
+            contents.extend(repo.get_contents(file_content.path))
+        else:
+            file = file_content
+            all_files.append(str(file).replace('ContentFile(path="','').replace('")',''))
     
 st.markdown('### 默认数据（更新于2022年五月）')
 data= pd.read_csv('GGAD_test.csv', index_col=0) 
