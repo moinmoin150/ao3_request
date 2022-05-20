@@ -102,10 +102,10 @@ def display(data):
         gridOptions=gridOptions,
         data_return_mode='AS_INPUT', 
         update_mode='MODEL_CHANGED', 
-        fit_columns_on_grid_load=True,
+        fit_columns_on_grid_load=False,
         theme='blue', #Add theme color to the table
         enable_enterprise_modules=True,
-        height=500, 
+        autoHeight=True,
         width='100%',
         reload_data=True
     )
